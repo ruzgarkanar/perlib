@@ -220,9 +220,9 @@ def get_result(
         return forecast
 
 def _get_file():
-    #if os.getcwd().split("\\")[-1] != "models":
-    #    path_dataset = './models'
-    #    os.chdir(path_dataset)
+    if os.getcwd().split("\\")[-1] != "models":
+        path_dataset = './models'
+        os.chdir(path_dataset)
     _, _, files = next(os.walk(os.getcwd()))
     if files.__len__() > 0 or _.__len__() > 0:
         twelve = time.time() - 12 * 60 * 60

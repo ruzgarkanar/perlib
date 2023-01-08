@@ -6,7 +6,7 @@ with open('README.md', 'r') as f:
     LONG_DESCRIPTION = f.read()
 
 NAME = 'perlib'
-VERSION = '1.0.5'
+VERSION = '1.0.6'
 LONG_DESCRIPTION_CONTENT_TYPE = 'text/markdown'
 URL = 'https://github.com/Ruzzg/perlib'
 AUTHOR = 'Rüzgar Ersin Kanar'
