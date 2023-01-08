@@ -196,6 +196,7 @@ class Process:
         False = skips this step
         '''
         self.missing_num = mode
+        self.missing_categ = mode
         return MissingValues.handle(self,df=dataFrame)
 
     def encode_cat(self,dataFrame : pd.DataFrame,mode = "auto") -> pd.DataFrame:

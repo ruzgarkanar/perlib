@@ -102,6 +102,7 @@ class mTrain:
         else:
             os.chdir("./models/")
 
+
     def save_model(self,model):
         self._current_folder()
         model_name = f'Data-{mTrain.get_name_model(self,model=model)}-{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
@@ -161,6 +162,7 @@ class mTrain:
         preds = to_df(preds, columns=["Predicts"])
         preds["Actual"] = y_test
         self.save_model(model=model_fit)
+        os.chdir("..")
         evaluate = dTester.calculate(preds.Actual.values, preds.Predicts.values,metric=metric)
         return preds, evaluate
 
@@ -192,6 +194,7 @@ class sTrain:
             os.chdir("./models/")
         else:
             os.chdir("./models/")
+
 
     def fit(self):
         self._current_folder()
@@ -234,6 +237,7 @@ class sTrain:
         model_name = f'Data-{self.get_name_model()}-{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
         model_fit.save(model_name+'.pkl')
         self._save_request_param(name=model_name)
+        os.chdir("..")
         return model_fit
 
 class dTrain:
@@ -323,6 +327,7 @@ class dTrain:
         else:
             os.chdir("./models/")
 
+
     def fit(self):
         self._current_folder()
         model_name = f'Data-{self.get_name_model()}-{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
@@ -337,6 +342,7 @@ class dTrain:
                               verbose=self.verbose,
                               callbacks = callbacks_list)
         self._save_request_param(name=model_name)
+        os.chdir("..")
         #self._save_json_model_param(self.model.model,model_name)
         return self.model
 

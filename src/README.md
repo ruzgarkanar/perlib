@@ -22,7 +22,7 @@ The core data structures are layers and models. For quick results with default p
 To set up more detailed operations and structures, you should use the Perflib functional API, which allows you to create arbitrary layers or write models completely from scratch via subclassing.
 
 
-Install
+## Install
 ```python
 pip install perlib
 ```
@@ -43,7 +43,9 @@ data.index = pd.date_range(start="2022-01-01",periods=len(data),freq="d")
 
 To read your own dataset;
 ```python 
-data = dataPrepration.read_data("./datasets/winequality-white.csv",delimiter=";")
+import perlib
+pr = perlib.dataPrepration()
+data = pr.read_data("./datasets/winequality-white.csv",delimiter=";")
 ```
 
 The easiest way to get quick results is with the 'get_result' function.
@@ -54,12 +56,12 @@ You can choice modelname ;
 ```python 
 forecast,evaluate = get_result(dataFrame=data,
                     y="Values",
-                    modelName="ARIMA",
+                    modelName="Lstnet",
                     dateColumn=False,
                     process=False,
                     forecastNumber=24,
                     metric=["mape","mae","mse"],
-                    #epoch=1,
+                    epoch=50,
                     forecastingStartDate=False,
                     verbose=1
                     )
@@ -132,8 +134,8 @@ The model is being saved
 1/1 [==============================] - 0s 16ms/step
             Salecount   Predicts
 Date                            
-2022-03-07         51  79.437263
-2022-03-14         64  84.282906
+2022-03-07         71  79.437263
+2022-03-14         84  84.282906
 2022-03-21         90  88.096298
 2022-03-28         87  82.875603
 MAPE: 3.576822717339706
@@ -145,8 +147,8 @@ forecast
 
             Predicts   Actual
 Date                            
-2022-03-07         51  79.437263
-2022-03-14         64  84.282906
+2022-03-07         71  79.437263
+2022-03-14         84  84.282906
 2022-03-21         90  88.096298
 2022-03-28         87  82.875603
 ```
@@ -154,9 +156,9 @@ Date
 ```python 
 evaluate
 
-{'mean_absolute_percentage_error': 48.24388951405902,
- 'mean_absolute_error': 224.02137889193878,
- 'mean_squared_error': 55762.26570064559}
+{'mean_absolute_percentage_error': 3.576822717339706,
+ 'mean_absolute_error': 14.02137889193878,
+ 'mean_squared_error': 3485.26570064559}
 ```
 
 

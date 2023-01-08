@@ -1,17 +1,19 @@
 import setuptools
 from setuptools import setup, find_packages
+import os
 
 with open('README.md', 'r') as f:
     LONG_DESCRIPTION = f.read()
 
 NAME = 'perlib'
-VERSION = '1.0.0'
+VERSION = '1.0.5'
 LONG_DESCRIPTION_CONTENT_TYPE = 'text/markdown'
 URL = 'https://github.com/Ruzzg/perlib'
 AUTHOR = 'Rüzgar Ersin Kanar'
 AUTHOR_EMAIL = 'ruzgarknr@gmail.com'
 LICENSE = 'Apache Software License'
 KEYWORDS = 'perlib,tensorflow,machine learning,deep learning'
+
 
 setup(
     name=NAME,
@@ -23,6 +25,22 @@ setup(
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
     license=LICENSE,
+    install_requires =[ "openpyxl",
+                        "joblib",
+                        "keras",
+                        "keras_tcn",
+                        "lightgbm",
+                        "loguru",
+                        "matplotlib",
+                        "numpy",
+                        "pandas",
+                        "python_dateutil",
+                        "scikit_learn",
+                        "scipy",
+                        "statsmodels",
+                        "tensorflow",
+                        "tqdm",
+                        "xgboost"],
     keywords=KEYWORDS,
     classifiers=[
         'License :: OSI Approved :: Apache Software License',

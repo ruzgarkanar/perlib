@@ -6,6 +6,7 @@ perlib/forecaster.py
 perlib.egg-info/PKG-INFO
 perlib.egg-info/SOURCES.txt
 perlib.egg-info/dependency_links.txt
+perlib.egg-info/requires.txt
 perlib.egg-info/top_level.txt
 perlib/analysis/__init__.py
 perlib/analysis/exceptions.py
