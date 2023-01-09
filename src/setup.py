@@ -1,12 +1,12 @@
 import setuptools
 from setuptools import setup, find_packages
-import os
+from perlib.__init__ import __version__
 
 with open('README.md', 'r') as f:
     LONG_DESCRIPTION = f.read()
 
 NAME = 'perlib'
-VERSION = '1.0.6'
+VERSION = __version__
 LONG_DESCRIPTION_CONTENT_TYPE = 'text/markdown'
 URL = 'https://github.com/Ruzzg/perlib'
 AUTHOR = 'Rüzgar Ersin Kanar'

@@ -42,11 +42,7 @@ class sTester:
 
     def _current_folder(self):
         if os.getcwd()[-6:] != "models":
-            try:
-                os.chdir("./models/")
-            except:
-                os.mkdir("./models")
-
+            os.chdir("./models/")
 
     def date_range(self):
         return pd.date_range(start=self.object.aR_info.forecastingStartDate,
@@ -162,10 +158,7 @@ class dTester:
 
     def _current_folder(self):
         if os.getcwd()[-6:] != "models":
-            try:
-                os.chdir("./models/")
-            except:
-                os.mkdir("./models")
+            os.chdir("./models/")
 
     def forecast(self):
         forecasts  = [ ]

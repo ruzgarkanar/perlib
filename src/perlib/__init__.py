@@ -1,3 +1,4 @@
+__version__ = "2.0.3"
 from .forecaster import *
 from .core._requests import req_info,aR_info,m_info
 from .core.models.dmodels import models

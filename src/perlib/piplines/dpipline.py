@@ -42,10 +42,11 @@ class Timeseries:
         else:
             if isinstance(self.models,list):
                 try:
+                    self.models = [x.upper() for x in self.models]
                     temp_list = []
                     for models in self.models:
-                        full_name = (models.__name__, models)
-                        temp_list.append(full_name)
+                        if models in self.models:
+                            temp_list.append(models)
                     self.models = temp_list
                 except:
                     raise ValueError("Invalid Models(s)")

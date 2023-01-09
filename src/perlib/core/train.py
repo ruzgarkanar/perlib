@@ -96,11 +96,12 @@ class mTrain:
     #                return "ACC: " + str(accuracy_score(actual, Yhat))
 
     def _current_folder(self):
-        if os.path.exists("models") is False:
-            os.mkdir("models")
-            os.chdir("./models/")
+        if os.path.exists("models") is True:
+            os.chdir("models")
         else:
-            os.chdir("./models/")
+            if os.getcwd().split("/")[-1] != "models":
+                os.mkdir("models")
+                os.chdir("models")
 
 
     def save_model(self,model):
@@ -189,11 +190,12 @@ class sTrain:
     def get_name_model(self):
         return self.object.aR_info.modelname
     def _current_folder(self):
-        if os.path.exists("models") is False:
-            os.mkdir("models")
-            os.chdir("./models/")
+        if os.path.exists("models") is True:
+            os.chdir("models")
         else:
-            os.chdir("./models/")
+            if os.getcwd().split("/")[-1] != "models":
+                os.mkdir("models")
+                os.chdir("models")
 
 
     def fit(self):
@@ -237,7 +239,6 @@ class sTrain:
         model_name = f'Data-{self.get_name_model()}-{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
         model_fit.save(model_name+'.pkl')
         self._save_request_param(name=model_name)
-        os.chdir("..")
         return model_fit
 
 class dTrain:
@@ -289,7 +290,7 @@ class dTrain:
         try:
             self.name = model.input_names[0]
         except:
-            self.name = "Bi-lstm"
+            self.name = "Bilstm"
         return model
 
     def __multiDataSplit(self, dataFrame = pd.DataFrame):
@@ -321,11 +322,12 @@ class dTrain:
             return ".h5"
 
     def _current_folder(self):
-        if os.path.exists("models") is False:
-            os.mkdir("models")
-            os.chdir("./models/")
+        if os.path.exists("models") is True:
+            os.chdir("models")
         else:
-            os.chdir("./models/")
+            if os.getcwd().split("/")[-1] != "models":
+                os.mkdir("models")
+                os.chdir("models")
 
 
     def fit(self):
@@ -342,7 +344,6 @@ class dTrain:
                               verbose=self.verbose,
                               callbacks = callbacks_list)
         self._save_request_param(name=model_name)
-        os.chdir("..")
         #self._save_json_model_param(self.model.model,model_name)
         return self.model
 

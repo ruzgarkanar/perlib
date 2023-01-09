@@ -219,30 +219,32 @@ def get_result(
     except:
         return forecast
 
+
 def _get_file():
-    if os.getcwd().split("\\")[-1] != "models":
-        path_dataset = './models'
-        os.chdir(path_dataset)
-    _, _, files = next(os.walk(os.getcwd()))
-    if files.__len__() > 0 or _.__len__() > 0:
-        twelve = time.time() - 12 * 60 * 60
-        file_list = \
-            {
-                "Datetime": [],
-                "File": []
-            }
-        for file in files:
-            if file.endswith(".h5") or file.endswith(".pkl")  and os.path.getmtime(file) > twelve:
-                file_list["Datetime"].append(pd.to_datetime(dt.fromtimestamp(os.path.getmtime(file))))
-                file_list["File"].append(file)
-        for file_ in _:
-            if file_.endswith(".tf") and os.path.getmtime(file_) > twelve:
-                file_list["Datetime"].append(pd.to_datetime(dt.fromtimestamp(os.path.getmtime(file_))))
-                file_list["File"].append(file_)
-        file_list = pd.DataFrame(file_list)
-        file_list = file_list.sort_values("Datetime", ascending=False).iloc[0]["File"]
-        return file_list
-    raise FileNotFoundError(f'The saved model could not be found. {files,_}')
+    if os.path.exists("models"):
+        os.chdir("models")
+    else:
+
+        _, _, files = next(os.walk(os.getcwd()))
+        if files.__len__() > 0 or _.__len__() > 0:
+            twelve = time.time() - 12 * 60 * 60
+            file_list = \
+                {
+                    "Datetime": [],
+                    "File": []
+                }
+            for file in files:
+                if file.endswith(".h5") or file.endswith(".pkl")  and os.path.getmtime(file) > twelve:
+                    file_list["Datetime"].append(pd.to_datetime(dt.fromtimestamp(os.path.getmtime(file))))
+                    file_list["File"].append(file)
+            for file_ in _:
+                if file_.endswith(".tf") and os.path.getmtime(file_) > twelve:
+                    file_list["Datetime"].append(pd.to_datetime(dt.fromtimestamp(os.path.getmtime(file_))))
+                    file_list["File"].append(file_)
+            file_list = pd.DataFrame(file_list)
+            file_list = file_list.sort_values("Datetime", ascending=False).iloc[0]["File"]
+            return file_list
+        raise FileNotFoundError(f'The saved model could not be found. {files,_}')
 
 
 def _check_period( dataFrame: pd.DataFrame) -> str:
