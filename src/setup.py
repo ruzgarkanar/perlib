@@ -10,6 +10,7 @@ VERSION = __version__
 LONG_DESCRIPTION_CONTENT_TYPE = 'text/markdown'
 URL = 'https://github.com/Ruzzg/perlib'
 AUTHOR = 'Rüzgar Ersin Kanar'
+DESCRIPTION = "Deep learning, Machine learning and Statistical learning for humans."
 AUTHOR_EMAIL = 'ruzgarknr@gmail.com'
 LICENSE = 'Apache Software License'
 KEYWORDS = 'perlib,tensorflow,machine learning,deep learning'
@@ -18,6 +19,7 @@ KEYWORDS = 'perlib,tensorflow,machine learning,deep learning'
 setup(
     name=NAME,
     version=VERSION,
+    description = DESCRIPTION,
     long_description=LONG_DESCRIPTION,
     long_description_content_type=LONG_DESCRIPTION_CONTENT_TYPE,
     packages = find_packages(),

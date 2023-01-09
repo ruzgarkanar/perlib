@@ -140,7 +140,7 @@ def get_result(
                     dataFrame[dateColumn] = pd.to_datetime(dataFrame[dateColumn])
                     parse(str(dataFrame[dateColumn].head(1).values[0]), fuzzy=True)
                     if True:
-                        dataFrame[dateColumn] = dataFrame[dateColumn].apply(lambda x: x.tz_localize(None))
+                        dataFrame[dateColumn] = dataFrame[dateColumn].apply(lambda x: pd.to_datetime(x).tz_localize(None))
                 except ValueError:
                     print(False)
         else:

@@ -33,12 +33,7 @@ class sTester:
         self.path              = path
         self.object            = object
         self.metric            = metric
-        check_forecast_date(
-            dataFrame=self.dataFrame,
-            date=self.object.aR_info.forecastingStartDate,
-            number=self.object.aR_info.forecastNumber,
-            info=self.object.aR_info
-        )
+
 
     def _current_folder(self):
         if os.getcwd()[-6:] != "models":
@@ -48,6 +43,12 @@ class sTester:
     #    return pd.date_range(start=self.object.aR_info.forecastingStartDate,
     #                                      periods=self.object.aR_info.forecastNumber)
     def forecast(self):
+        check_forecast_date(
+            dataFrame=self.dataFrame,
+            date=self.object.aR_info.forecastingStartDate,
+            number=self.object.aR_info.forecastNumber,
+            info=self.object.aR_info
+        )
         self._current_folder()
         self.dataFrame = np.log(self.dataFrame)
         if os.listdir(os.getcwd()).__len__() > 0:
@@ -70,7 +71,7 @@ class sTester:
             forecasts = self.model.forecast(self.object.aR_info.forecastNumber,alpha=0.05,dynamic = True)
 
         data = pd.DataFrame(np.exp(forecasts.values),columns=["Predicts"],index=dTester.create_date_range(dataFrame=self.dataFrame
-                                                                                                                  ,info=self.object.aR_info))
+                                                                                                          ,info=self.object.aR_info))
         return data
 
     def evaluate(self):
@@ -92,12 +93,6 @@ class dTester:
             self.pr.get_scaler(self.object.req_info.scaler)
         dataset = self.scaler.fit_transform(self.dataFrame)
         self.count = self.object.req_info.lookback
-        check_forecast_date(
-            dataFrame=self.dataFrame,
-            date=self.object.req_info.forecastingStartDate,
-            number=self.object.req_info.forecastNumber,
-            info=self.object.req_info
-        )
 
     def get_testdata(self ):
         if self.object.req_info.forecastingStartDate is False:
@@ -167,6 +162,12 @@ class dTester:
             os.chdir("models")
 
     def forecast(self):
+        check_forecast_date(
+            dataFrame=self.dataFrame,
+            date=self.object.req_info.forecastingStartDate,
+            number=self.object.req_info.forecastNumber,
+            info=self.object.req_info
+        )
         forecasts  = [ ]
         self._current_folder()
         if os.listdir(os.getcwd()).__len__() > 0:

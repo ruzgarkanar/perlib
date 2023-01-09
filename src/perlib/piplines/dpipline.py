@@ -11,24 +11,28 @@ MODELS = ["LSTNET","LSTM","BILSTM","CONVLSTM","TCN","RNN","ARIMA","SARIMA"]
 
 class Timeseries:
     def __init__(self,
-                 dataFrame           ,
-                 y              : str,
-                 dateColumn     : str,
-                 models         = "all",
-                 verbose        = 0,
-                 epoch          = 2,
-                 process        = False,
-                 forecastNumber = 24
+                 dataFrame             : pd.DataFrame,
+                 y                     : str,
+                 dateColumn            : str,
+                 models                : str  ="all",
+                 verbose               : int  = 0,
+                 epoch                 : int  = 2,
+                 metrics               : str = "mape",
+                 process               : bool = False,
+                 forecastNumber        : int  = 24,
+                 forecastingStartDate  : str  =False
                  ):
 
-        self.dataFrame      = dataFrame
-        self.y              = y
-        self.dateColumn     = dateColumn
-        self.models         = models
-        self.verbose        = verbose
-        self.process        = process
-        self.epoch          = epoch
-        self.forecastNumber = forecastNumber
+        self.dataFrame            = dataFrame
+        self.y                    = y
+        self.dateColumn           = dateColumn
+        self.models               = models
+        self.verbose              = verbose
+        self.process              = process
+        self.epoch                = epoch
+        self.forecastNumber       = forecastNumber
+        self.forecastingStartDate = forecastingStartDate
+        self.metrics               = metrics
 
     def fit(self):
         if type(self.dataFrame) is pd.DataFrame or isinstance(self.dataFrame,pd.DataFrame):
@@ -58,17 +62,20 @@ class Timeseries:
             forecast,evaluate = tqdm(get_result(dataFrame=self.dataFrame,
                                             y=self.y,
                                             modelName=model,
+                                            metric= self.metrics,
                                             dateColumn=self.dateColumn,
                                             process=self.process,
                                             forecastNumber=self.forecastNumber,
-                                            metric=["mape","mae","mse"],
                                             epoch=self.epoch,
-                                            forecastingStartDate=False,
+                                            forecastingStartDate=self.forecastingStartDate,
                                             verbose= self.verbose
                                             ))
             names.append(model)
             metrics_.append(evaluate)
         predictions = pd.DataFrame()
         for m,n in zip(metrics_,names):
+            if self.metrics.__len__() == 1:
+                predictions = predictions.append(to_df(data=m.split(":")[1], index=[n], columns=[m.split(":")[0]]))
+            else:
              predictions =  predictions.append(to_df(m,[n]))
         return  predictions
