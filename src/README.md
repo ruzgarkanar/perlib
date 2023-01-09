@@ -255,7 +255,7 @@ layers = {"Layer": {"unit":[150,100]
 You can set each parameter below it by calling the 'req_info' object.
 ```python 
 req_info.layers = layers
-req_info.modelname = "lstnet"
+req_info.modelname = "lstm"
 req_info.epoch  =  3
 req_info.targetCol = "Salecount"
 req_info.forecastingStartDate = "2021-05-01"

@@ -224,7 +224,6 @@ def _get_file():
     if os.path.exists("models"):
         os.chdir("models")
     else:
-
         _, _, files = next(os.walk(os.getcwd()))
         if files.__len__() > 0 or _.__len__() > 0:
             twelve = time.time() - 12 * 60 * 60

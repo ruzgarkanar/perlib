@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: perlib
-Version: 2.0.3
+Version: 2.0.4
 Author: Rüzgar Ersin Kanar
 Author-email: ruzgarknr@gmail.com
 License: Apache Software License
@@ -268,7 +268,7 @@ layers = {"Layer": {"unit":[150,100]
 You can set each parameter below it by calling the 'req_info' object.
 ```python 
 req_info.layers = layers
-req_info.modelname = "lstnet"
+req_info.modelname = "lstm"
 req_info.epoch  =  3
 req_info.targetCol = "Salecount"
 req_info.forecastingStartDate = "2021-05-01"

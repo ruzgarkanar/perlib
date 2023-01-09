@@ -42,11 +42,11 @@ class sTester:
 
     def _current_folder(self):
         if os.getcwd()[-6:] != "models":
-            os.chdir("./models/")
+            os.chdir("models")
 
-    def date_range(self):
-        return pd.date_range(start=self.object.aR_info.forecastingStartDate,
-                                          periods=self.object.aR_info.forecastNumber)
+    #def date_range(self):
+    #    return pd.date_range(start=self.object.aR_info.forecastingStartDate,
+    #                                      periods=self.object.aR_info.forecastNumber)
     def forecast(self):
         self._current_folder()
         self.dataFrame = np.log(self.dataFrame)
@@ -59,7 +59,8 @@ class sTester:
         if bool(self.object.aR_info.forecastingStartDate) is True:
             if str(self.dataFrame.index[-1].date()) != self.object.aR_info.forecastingStartDate:
                 forecasts = self.model.predict(start=len(self.dataFrame[:-len(self.dataFrame[self.dataFrame.index > self.object.aR_info.forecastingStartDate]):]), end=len(self.dataFrame), dynamic=True)
-                data = pd.DataFrame(np.exp(forecasts.values),columns=["Predicts"],index=self.date_range())
+                data = pd.DataFrame(np.exp(forecasts.values),columns=["Predicts"],index=dTester.create_date_range(dataFrame=self.dataFrame
+                                                                                                                  ,info=self.object.aR_info))
                 data["Actual"] = np.exp(dTester.a_data(info=self.object.aR_info,dataFrame=self.dataFrame)).values
                 self.actual,self.Yhat = data.Actual.values,forecasts.values
                 return data
@@ -67,7 +68,9 @@ class sTester:
                 forecasts= self.model.predict(start=len(self.dataFrame)+1, end=len(self.dataFrame)+self.object.aR_info.forecastNumber, dynamic=True)
         else:
             forecasts = self.model.forecast(self.object.aR_info.forecastNumber,alpha=0.05,dynamic = True)
-        data = pd.DataFrame(np.exp(forecasts.values),columns=["Predicts"],index=self.date_range())
+
+        data = pd.DataFrame(np.exp(forecasts.values),columns=["Predicts"],index=dTester.create_date_range(dataFrame=self.dataFrame
+                                                                                                                  ,info=self.object.aR_info))
         return data
 
     def evaluate(self):
@@ -116,38 +119,41 @@ class dTester:
     def __check(self):
         return self.object.req_info.period.lower()
 
-    def __exist(self):
-        if self.create_date_range().__len__():
+    @staticmethod
+    def __exist(info,dataFrame):
+        if dTester.create_date_range(info,dataFrame).__len__():
             return 1
 
-    def create_date_range(self):
-        if self.__check() == "montly":
-            return pd.date_range(start=str(self.dataFrame.index[-1] + timedelta(days=24)),
-                                 periods=self.object.req_info.forecastNumber, freq="m")
-        if self.__check() == "hourly":
-            return pd.date_range(start=str(self.dataFrame.index[-1] + timedelta(hours=1)),
-                                 periods=self.object.req_info.forecastNumber, freq="h")
-        elif self.__check() == "daily":
-            return pd.date_range(start=str(self.dataFrame.index[-1] + timedelta(days=1)),
-                                 periods=self.object.req_info.forecastNumber, freq="d")
-        elif self.__check() == "weekly":
-            return pd.date_range(start=str(self.dataFrame.index[-1] + timedelta(weeks=1)),
-                                 periods=self.object.req_info.forecastNumber, freq="w")
-        elif self.__check() == "30min":
-            return pd.date_range(start=str(self.dataFrame.index[-1] + timedelta(minutes=30)),
-                                 periods=self.object.req_info.forecastNumber, freq="30min")
-        elif self.__check() == "15min":
-            return pd.date_range(start=str(self.dataFrame.index[-1] + timedelta(minutes=15)),
-                                 periods=self.object.req_info.forecastNumber, freq="15min")
-        elif self.__check() == "10min":
-            return pd.date_range(start=str(self.dataFrame.index[-1] + timedelta(minutes=10)),
-                                 periods=self.object.req_info.forecastNumber, freq="10min")
-        elif self.__check() == "5min":
-            return pd.date_range(start=str(self.dataFrame.index[-1] + timedelta(minutes=5)),
-                                 periods=self.object.req_info.forecastNumber, freq="5min")
-        elif self.__check() == "1min":
-            return pd.date_range(start=str(self.dataFrame.index[-1] + timedelta(minutes=1)),
-                                 periods=self.object.req_info.forecastNumber, freq="1min")
+    @staticmethod
+    def create_date_range(info,dataFrame):
+        period = info.period
+        if period.lower() == "montly":
+            return pd.date_range(start=str(dataFrame.index[-1] + timedelta(days=24)),
+                                 periods=info.forecastNumber, freq="m")
+        if period.lower() == "hourly":
+            return pd.date_range(start=str(dataFrame.index[-1] + timedelta(hours=1)),
+                                 periods=info.forecastNumber, freq="h")
+        elif period.lower() == "daily":
+            return pd.date_range(start=str(dataFrame.index[-1] + timedelta(days=1)),
+                                 periods=info.forecastNumber, freq="d")
+        elif period.lower() == "weekly":
+            return pd.date_range(start=str(dataFrame.index[-1] + timedelta(weeks=1)),
+                                 periods=info.forecastNumber, freq="w")
+        elif period.lower() == "30min":
+            return pd.date_range(start=str(dataFrame.index[-1] + timedelta(minutes=30)),
+                                 periods=info.forecastNumber, freq="30min")
+        elif period.lower() == "15min":
+            return pd.date_range(start=str(dataFrame.index[-1] + timedelta(minutes=15)),
+                                 periods=info.forecastNumber, freq="15min")
+        elif period.lower() == "10min":
+            return pd.date_range(start=str(dataFrame.index[-1] + timedelta(minutes=10)),
+                                 periods=info.forecastNumber, freq="10min")
+        elif period.lower() == "5min":
+            return pd.date_range(start=str(dataFrame.index[-1] + timedelta(minutes=5)),
+                                 periods=info.forecastNumber, freq="5min")
+        elif period.lower() == "1min":
+            return pd.date_range(start=str(dataFrame.index[-1] + timedelta(minutes=1)),
+                                 periods=info.forecastNumber, freq="1min")
 
     def predict( self,pr_data):
         val_rescaled = self.fit_transform(pr_data)
@@ -158,7 +164,7 @@ class dTester:
 
     def _current_folder(self):
         if os.getcwd()[-6:] != "models":
-            os.chdir("./models/")
+            os.chdir("models")
 
     def forecast(self):
         forecasts  = [ ]
@@ -178,7 +184,9 @@ class dTester:
                 for i in range(self.object.req_info.forecastNumber):
                     pr_data = np.array(self.get_s_data())
                     forecasts.append(self.predict(pr_data)[0][0])
-                    if self.__exist() == 1:
+                    if self.__exist(
+                                    info=self.object.req_info,
+                                    dataFrame=self.dataFrame) == 1:
                         if bool(self.__check()):
                             self.count+=1
                 data = self.a_data(info=self.object.req_info,dataFrame=self.dataFrame)
@@ -199,7 +207,8 @@ class dTester:
                 forecasts.append(Yhat)
                 pr_data = np.append(pr_data, Yhat)[-self.object.req_info.lookback:]
         data = pd.DataFrame(forecasts,columns=["Predicts"])
-        data.index = self.create_date_range()
+        data.index = dTester.create_date_range(dataFrame=self.dataFrame,
+                                            info=self.object.req_info)
         return data
 
     @staticmethod
