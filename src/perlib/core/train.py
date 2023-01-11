@@ -95,20 +95,13 @@ class mTrain:
     #            else:
     #                return "ACC: " + str(accuracy_score(actual, Yhat))
 
-    def _current_folder(self):
-        if os.path.exists("models") is True:
-            os.chdir("models")
-        else:
-            if os.getcwd().split("/")[-1] != "models":
-                os.mkdir("models")
-                os.chdir("models")
 
 
     def save_model(self,model):
-        self._current_folder()
+        prefix="models/"
         model_name = f'Data-{mTrain.get_name_model(self,model=model)}-{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
-        joblib.dump(model,model_name + '.pkl')
-        mTrain._save_request_param(self,name=model_name)
+        joblib.dump(model,prefix+model_name + '.pkl')
+        mTrain._save_request_param(self,name=prefix+model_name)
 
     def check_dataFrame(self):
         if type(self.dataFrame) is pd.DataFrame or isinstance(self.dataFrame, pd.DataFrame):
@@ -163,7 +156,6 @@ class mTrain:
         preds = to_df(preds, columns=["Predicts"])
         preds["Actual"] = y_test
         self.save_model(model=model_fit)
-        os.chdir("..")
         evaluate = dTester.calculate(preds.Actual.values, preds.Predicts.values,metric=metric)
         return preds, evaluate
 
@@ -189,17 +181,10 @@ class sTrain:
             json.dump(str(self.object.aR_info.__dict__), outfile)
     def get_name_model(self):
         return self.object.aR_info.modelname
-    def _current_folder(self):
-        if os.path.exists("models") is True:
-            os.chdir("models")
-        else:
-            if os.getcwd().split("/")[-1] != "models":
-                os.mkdir("models")
-                os.chdir("models")
 
 
     def fit(self):
-        self._current_folder()
+        prefix="models/"
         if type(self.dataFrame) is pd.DataFrame or isinstance(self.dataFrame, pd.DataFrame):
             if self.dataFrame.shape[0] == 0:
                 raise ValueError('Data is empty.')
@@ -207,8 +192,6 @@ class sTrain:
             raise TypeError("must be datafarame")
         check_forecast_date(
             dataFrame=self.dataFrame,
-            date=self.object.aR_info.forecastingStartDate,
-            number=self.object.aR_info.forecastNumber,
             info=self.object.aR_info
         )
         column = self.dataFrame.columns.tolist()[0]
@@ -237,8 +220,8 @@ class sTrain:
             model_fit = ARIMA(data_train, order=(or_a)).fit()
         model_fit.summary()
         model_name = f'Data-{self.get_name_model()}-{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
-        model_fit.save(model_name+'.pkl')
-        self._save_request_param(name=model_name)
+        model_fit.save(prefix+model_name+'.pkl')
+        self._save_request_param(name=prefix+model_name)
         return model_fit
 
 class dTrain:
@@ -262,8 +245,6 @@ class dTrain:
             raise TypeError("must be datafarame")
         check_forecast_date(
             dataFrame=self.dataFrame,
-            date=self.object.req_info.forecastingStartDate,
-            number=self.object.req_info.forecastNumber,
             info=self.object.req_info
         )
         self.dataFrame = self.pr.trainingFordate_range(dataFrame=self.dataFrame,
@@ -321,20 +302,11 @@ class dTrain:
         else:
             return ".h5"
 
-    def _current_folder(self):
-        if os.path.exists("models") is True:
-            os.chdir("models")
-        else:
-            if os.getcwd().split("/")[-1] != "models":
-                os.mkdir("models")
-                os.chdir("models")
-
-
     def fit(self):
-        self._current_folder()
+        prefix="models/"
         model_name = f'Data-{self.get_name_model()}-{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
         callbacks_list = [tf.keras.callbacks.EarlyStopping(monitor='val_loss',patience=10,),
-                          tf.keras.callbacks.ModelCheckpoint(filepath=model_name+str(self._save_format()), monitor='val_loss', mode='min',
+                          tf.keras.callbacks.ModelCheckpoint(filepath=prefix+model_name+str(self._save_format()), monitor='val_loss', mode='min',
                                                           save_freq='epoch', save_best_only=True, )]
         self.model =  self.model.fit(self.train_data_multi, batch_size=self.object.req_info.batch_size,
                               steps_per_epoch = 500,
@@ -343,7 +315,7 @@ class dTrain:
                               validation_steps=50,
                               verbose=self.verbose,
                               callbacks = callbacks_list)
-        self._save_request_param(name=model_name)
+        self._save_request_param(name=prefix+model_name)
         #self._save_json_model_param(self.model.model,model_name)
         return self.model
 

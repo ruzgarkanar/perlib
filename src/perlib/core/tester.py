@@ -34,22 +34,14 @@ class sTester:
         self.object            = object
         self.metric            = metric
 
-
-    def _current_folder(self):
-        if os.getcwd()[-6:] != "models":
-            os.chdir("models")
-
     #def date_range(self):
     #    return pd.date_range(start=self.object.aR_info.forecastingStartDate,
     #                                      periods=self.object.aR_info.forecastNumber)
     def forecast(self):
         check_forecast_date(
             dataFrame=self.dataFrame,
-            date=self.object.aR_info.forecastingStartDate,
-            number=self.object.aR_info.forecastNumber,
             info=self.object.aR_info
         )
-        self._current_folder()
         self.dataFrame = np.log(self.dataFrame)
         if os.listdir(os.getcwd()).__len__() > 0:
             try:
@@ -58,15 +50,16 @@ class sTester:
             except:
                 raise OSError("No file or directory found at : {}".format(self.path))
         if bool(self.object.aR_info.forecastingStartDate) is True:
-            if str(self.dataFrame.index[-1].date()) != self.object.aR_info.forecastingStartDate:
-                forecasts = self.model.predict(start=len(self.dataFrame[:-len(self.dataFrame[self.dataFrame.index > self.object.aR_info.forecastingStartDate]):]), end=len(self.dataFrame), dynamic=True)
-                data = pd.DataFrame(np.exp(forecasts.values),columns=["Predicts"],index=dTester.create_date_range(dataFrame=self.dataFrame
-                                                                                                                  ,info=self.object.aR_info))
+            if pd.to_datetime(self.dataFrame.index[-1]) != pd.to_datetime(self.object.aR_info.forecastingStartDate):
+                start=len(self.dataFrame[:-len(self.dataFrame[self.dataFrame.index > self.object.aR_info.forecastingStartDate]):])
+                forecasts = self.model.predict(start=start,
+                                               end=start+self.object.aR_info.forecastNumber-1, dynamic=True)
+                data = pd.DataFrame(np.exp(forecasts.values),columns=["Predicts"],index=self.dataFrame[start:start+len(forecasts)].index)
                 data["Actual"] = np.exp(dTester.a_data(info=self.object.aR_info,dataFrame=self.dataFrame)).values
                 self.actual,self.Yhat = data.Actual.values,forecasts.values
                 return data
             else:
-                forecasts= self.model.predict(start=len(self.dataFrame)+1, end=len(self.dataFrame)+self.object.aR_info.forecastNumber, dynamic=True)
+                forecasts= self.model.predict(start=len(self.dataFrame), end=len(self.dataFrame)+self.object.aR_info.forecastNumber-1, dynamic=True)
         else:
             forecasts = self.model.forecast(self.object.aR_info.forecastNumber,alpha=0.05,dynamic = True)
 
@@ -95,10 +88,8 @@ class dTester:
         self.count = self.object.req_info.lookback
 
     def get_testdata(self ):
-        if self.object.req_info.forecastingStartDate is False:
-            return self.dataFrame[-self.object.req_info.lookback:]
-        else:
-            return self.dataFrame[self.dataFrame.index >
+
+        return self.dataFrame[self.dataFrame.index >
                                   str(self.dataFrame[self.dataFrame.index
                     < self.object.req_info.forecastingStartDate][-self.object.req_info.lookback:].index[0])]
 
@@ -122,6 +113,8 @@ class dTester:
     @staticmethod
     def create_date_range(info,dataFrame):
         period = info.period
+        if info.forecastNumber is False:
+            info.forecastNumber=24
         if period.lower() == "montly":
             return pd.date_range(start=str(dataFrame.index[-1] + timedelta(days=24)),
                                  periods=info.forecastNumber, freq="m")
@@ -157,19 +150,12 @@ class dTester:
         Yhat = self.inverse_transform(Yhat)
         return Yhat
 
-    def _current_folder(self):
-        if os.getcwd()[-6:] != "models":
-            os.chdir("models")
-
     def forecast(self):
         check_forecast_date(
             dataFrame=self.dataFrame,
-            date=self.object.req_info.forecastingStartDate,
-            number=self.object.req_info.forecastNumber,
             info=self.object.req_info
         )
         forecasts  = [ ]
-        self._current_folder()
         if os.listdir(os.getcwd()).__len__() > 0:
             try:
                 if self.object.req_info.modelname.lower() == "lstnet":
@@ -180,45 +166,44 @@ class dTester:
                     self.model = load_model(self.path)
             except:
                 raise OSError("No file or directory found at : {}".format(self.path))
-        if bool(self.object.req_info.forecastingStartDate) is True:
-            if str(self.dataFrame.index[-1].date()) != self.object.req_info.forecastingStartDate:
-                for i in range(self.object.req_info.forecastNumber):
-                    pr_data = np.array(self.get_s_data())
-                    forecasts.append(self.predict(pr_data)[0][0])
-                    if self.__exist(
-                                    info=self.object.req_info,
-                                    dataFrame=self.dataFrame) == 1:
-                        if bool(self.__check()):
-                            self.count+=1
-                data = self.a_data(info=self.object.req_info,dataFrame=self.dataFrame)
-                data["Predicts"] = forecasts
-                self.actual = self.a_data(info=self.object.req_info,dataFrame=self.dataFrame)[self.object.req_info.targetCol].values
-                self.Yhat = forecasts
-                return data
-            else:
+        pr_data = np.array(self.get_s_data())
+        for i in range(self.object.req_info.forecastNumber):
+            if pd.to_datetime(self.dataFrame.index[-1]) != pd.to_datetime(self.object.req_info.forecastingStartDate):
                 pr_data = np.array(self.get_s_data())
-                for i in range(self.object.req_info.forecastNumber):
-                    Yhat = self.predict(pr_data)[0][0]
-                    forecasts.append(Yhat)
-                    pr_data = np.append(pr_data, Yhat)[-self.object.req_info.lookback:]
-        else:
-            pr_data = np.array(self.get_s_data())
-            for i in range(self.object.req_info.forecastNumber):
-                Yhat = self.predict(pr_data)[0][0]
-                forecasts.append(Yhat)
+            Yhat=self.predict(pr_data)[0][0]
+            forecasts.append(Yhat)
+            if pd.to_datetime(self.dataFrame.index[-1])==pd.to_datetime(self.object.req_info.forecastingStartDate):
                 pr_data = np.append(pr_data, Yhat)[-self.object.req_info.lookback:]
-        data = pd.DataFrame(forecasts,columns=["Predicts"])
-        data.index = dTester.create_date_range(dataFrame=self.dataFrame,
-                                            info=self.object.req_info)
+            else:
+                self.count+=1
+        data = self.a_data(info=self.object.req_info,dataFrame=self.dataFrame)
+        if data.shape[0]!=0:
+            data["Predicts"] = forecasts
+            self.actual = self.a_data(info=self.object.req_info,dataFrame=self.dataFrame)[self.object.req_info.targetCol].values
+        else:
+            data = pd.DataFrame(forecasts, columns=["Predicts"])
+            data.index = dTester.create_date_range(dataFrame=self.dataFrame,
+                                                   info=self.object.req_info)
+        self.Yhat = forecasts
+        return data
+        # else:
+        #     pr_data = np.array(self.get_s_data())
+        #     for i in range(self.object.req_info.forecastNumber):
+        #         Yhat = self.predict(pr_data)[0][0]
+        #         forecasts.append(Yhat)
+        #         pr_data = np.append(pr_data, Yhat)[-self.object.req_info.lookback:]
+        # data = pd.DataFrame(forecasts,columns=["Predicts"])
+        # data.index = dTester.create_date_range(dataFrame=self.dataFrame,
+        #                                     info=self.object.req_info)
         return data
 
     @staticmethod
     def a_data(info,dataFrame : pd.DataFrame):
         if bool(info.forecastingStartDate) is True and bool(info.forecastNumber) is False:
-            return dataFrame[dataFrame.index >=
+            return dataFrame[dataFrame.index >
                                   pd.to_datetime(info.forecastingStartDate)]
         elif bool(info.forecastingStartDate) is True and bool(info.forecastNumber) is True:
-            return dataFrame[dataFrame.index >=
+            return dataFrame[dataFrame.index >
                              pd.to_datetime(info.forecastingStartDate)][:info.forecastNumber]
     def evaluate(self):
         return dTester.calculate(self.actual,pd.Series(self.Yhat),self.metric)

@@ -50,7 +50,7 @@ data = pr.read_data("./datasets/winequality-white.csv",delimiter=";")
 
 The easiest way to get quick results is with the 'get_result' function.
 You can choice modelname ;
-"rnn", "lstm", "bilstm", "convlstm", "tcn", "lstnet", "arima" ,"sarima" or all machine learning algorithms
+"RNN", "LSTM", "BILSTM", "CONVLSTM", "TCN", "LSTNET", "ARIMA" ,"SARIMA" or all machine learning algorithms
 
 
 ```python 
@@ -61,8 +61,8 @@ forecast,evaluate = get_result(dataFrame=data,
                     process=False,
                     forecastNumber=24,
                     metric=["mape","mae","mse"],
-                    epoch=50,
-                    forecastingStartDate=False,
+                    epoch=2,
+                    forecastingStartDate=2022-03-06,
                     verbose=1
                     )
 ```
@@ -132,7 +132,7 @@ The model is being saved
 1/1 [==============================] - 0s 16ms/step
 1/1 [==============================] - 0s 10ms/step
 1/1 [==============================] - 0s 16ms/step
-            Salecount   Predicts
+              Values   Predicts
 Date                            
 2022-03-07         71  79.437263
 2022-03-14         84  84.282906
@@ -148,9 +148,9 @@ forecast
             Predicts   Actual
 Date                            
 2022-03-07         71  79.437263
-2022-03-14         84  84.282906
-2022-03-21         90  88.096298
-2022-03-28         87  82.875603
+2022-03-08         84  84.282906
+2022-03-09         90  88.096298
+2022-03-10         87  82.875603
 ```
 
 ```python 
@@ -171,9 +171,12 @@ pipline = Timeseries(dataFrame=data,
                        y="Values",
                        dateColumn=False,
                        process=False,
-                       epoch=2,
-                       forecastNumber= 7,
-                       models="all")
+                       epoch=1,
+                       forecastingStartDate="2022-03-06",
+                       forecastNumber= 24,
+                       models="all",
+                       metrics=["mape","mae","mse"]
+                       )
 predictions = pipline.fit()
 
             mean_absolute_percentage_error | mean_absolute_error  | mean_squared_error
@@ -256,11 +259,11 @@ You can set each parameter below it by calling the 'req_info' object.
 ```python 
 req_info.layers = layers
 req_info.modelname = "lstm"
-req_info.epoch  =  3
-req_info.targetCol = "Salecount"
-req_info.forecastingStartDate = "2021-05-01"
-req_info.period = "daily"
-req_info.forecastNumber = 18
+req_info.epoch  =  2
+req_info.targetCol = "Values"
+req_info.forecastingStartDate = "2022-01-06 19:00:00"
+req_info.period = "hourly"
+req_info.forecastNumber = 7
 req_info.scaler = "standard"
 ```
 
@@ -306,7 +309,7 @@ train.fit()
 ```
 After the training is completed, you can see the results by giving the dataFrame,object,path,metric parameters to 'dTester'.
 ```python 
-t = dTester(dataFrame=data,object=s,path="Data-Lstm-2022-12-14-19-56-28.h5",metric="mape")
+t = dTester(dataFrame=data,object=s,path="Data-Lstm-2022-12-14-19-56-28.h5",metric=["mape","mae"])
 ```
 ```python 
 t.forecast()

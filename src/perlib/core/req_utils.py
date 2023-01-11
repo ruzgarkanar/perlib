@@ -270,37 +270,35 @@ def check_scaler(scaler):
     if scaler not in scalers:
         raise ValueError(f'You entered {scaler}, "scaler" should be parameters  : '
                          f'"minmax,standard,maxabs or robust"')
-
-def check_forecast_date(dataFrame: pd.DataFrame, date: str, number: int,info):
-    """
-    :param dataFrame:
-    :param date:
-    :param number:
-    :param info:
-    :return:
-    """
-    if bool(date) is True and bool(number) is False:
-        if bool(dataFrame[dataFrame.index == date].__len__()) is False:
+def check_date_in_data(dataFrame: pd.DataFrame, date: str):
+    if bool(date):
+        if dataFrame[dataFrame.index == date].__len__()==0:
             raise ValueError(
                 f'The date entered was not found., {date}')
-            # raise ValueError(f'enter a valid date, {str(dataFrame.index[0].date())} to {str(dataFrame.index[-1].date())}')
+
+def check_forecast_date(dataFrame: pd.DataFrame, info):
+    check_date_in_data(dataFrame,info.forecastingStartDate)
+    #Forecasting
+    if bool(info.forecastingStartDate) is False and bool(info.forecastNumber) is True:
+        info.forecastingStartDate = str(dataFrame.index[-1])
+    elif bool(info.forecastingStartDate) is False and bool(info.forecastNumber) is False:
+        info.forecastingStartDate = str(dataFrame.index[-1])
+        info.forecastNumber = 24
+    elif bool(info.forecastingStartDate) is True and bool(info.forecastNumber) is False:
+        if dataFrame[dataFrame.index > info.forecastingStartDate].__len__() != 0:
+            info.forecastNumber = dataFrame[dataFrame.index > info.forecastingStartDate].__len__()
         else:
-            info.forecastingStartDate = date
-    elif bool(date) is False and bool(number) is True:
-        info.forecastingStartDate = str(dataFrame[-number:].index[0].date())
-    elif bool(date) is True and bool(number) is True:
-        info.forecastingStartDate = date
-        if isinstance(number, int):
-            if str(dataFrame.index[-1].date()) != info.forecastingStartDate:
-                if number > \
-                        dataFrame[dataFrame.index >= date].__len__():
-                    info.forecastNumber = \
-                        dataFrame[dataFrame.index >= date].__len__()
-        else:
-            raise TypeError \
-                (f"Argument save must be of type bool, not {type(number)}")
-    else:
-        raise ValueError('The date or number entered was not found')
+            info.forecastNumber = 24
+    elif bool(info.forecastingStartDate) is True and bool(info.forecastNumber) is True:
+        if info.forecastNumber > \
+                dataFrame[dataFrame.index > info.forecastingStartDate].__len__() and dataFrame[dataFrame.index > info.forecastingStartDate].__len__() != 0:
+            info.forecastNumber = \
+                dataFrame[dataFrame.index > info.forecastingStartDate].__len__()
+
+
+
+       # raise TypeError \
+        #    (f"Argument save must be of type int, not {type(info.forecastNumber)}")
 
 
 
