@@ -365,7 +365,7 @@ from perlib.core.train import mTrain
 ```python 
 m_info.testsize = .01
 m_info.y        = "quality"
-m_info.modelname= "SVC"
+m_info.modelname= "SVR"
 m_info.auto  = False
 ```
 
