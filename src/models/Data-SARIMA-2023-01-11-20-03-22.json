@@ -1,1 +1,0 @@
-"{'modelname': 'SARIMA', 'max_p': range(0, 5), 'max_d': range(0, 2), 'mad_q': 5, 'max_P': range(0, 2), 'max_D': range(0, 2), 'max_Q': range(0, 2), 's': 12, 'period': 'Hourly', 'forecastNumber': 23, 'forecastingStartDate': '2022-01-06', 'metric': None, 'max_q': range(0, 5)}"
