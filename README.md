@@ -69,57 +69,6 @@ forecast,evaluate = get_result(dataFrame=data,
 ```python 
 
 Parameters created
-Model: "model"
-__________________________________________________________________________________________________
- Layer (type)                   Output Shape         Param #     Connected to                     
-==================================================================================================
- input_1 (InputLayer)           [(None, 24, 1)]      0           []                               
-                                                                                                  
- reshape (Reshape)              (None, 24, 1, 1)     0           ['input_1[0][0]']                
-                                                                                                  
- conv2d (Conv2D)                (None, 19, 1, 100)   700         ['reshape[0][0]']   
-
- dropout (Dropout)              (None, 19, 1, 100)   0           ['conv2d[0][0]']                 
-                                                                                                  
- reshape_1 (Reshape)            (None, 19, 100)      0           ['dropout[0][0]']                
-                                                                                                  
- pre_skip_trans (PreSkipTrans)  (None, 1, 100)       0           ['reshape_1[0][0]']              
-                                                                                                  
- gru (GRU)                      [(None, 100),        60600       ['reshape_1[0][0]']              
-                                 (None, 100)]                                                     
-                                                                                                  
- gru_1 (GRU)                    [(None, 5),          1605        ['pre_skip_trans[0][0]']         
-                                 (None, 5)]                                                       
-                                                                                                  
- dropout_1 (Dropout)            (None, 100)          0           ['gru[0][1]']                    
-                                                                                                  
- post_skip_trans (PostSkipTrans  (None, 95)          0           ['gru_1[0][1]',                  
- )                                                                'input_1[0][0]']                
-                                                                                                  
- pre_ar_trans (PreARTrans)      (None, 24)           0           ['input_1[0][0]']                
-                                                                                                  
- concatenate (Concatenate)      (None, 195)          0           ['dropout_1[0][0]',              
-                                                                  'post_skip_trans[0][0]']        
-                                                                                                  
- flatten_1 (Flatten)            (None, 24)           0           ['pre_ar_trans[0][0]']  
- 
- flatten (Flatten)              (None, 195)          0           ['concatenate[0][0]']            
-                                                                                                  
- dense_1 (Dense)                (None, 1)            25          ['flatten_1[0][0]']              
-                                                                                                  
- dense (Dense)                  (None, 1)            196         ['flatten[0][0]']                
-                                                                                                  
- post_ar_trans (PostARTrans)    (None, 1)            0           ['dense_1[0][0]',                
-                                                                  'input_1[0][0]']                
-                                                                                                  
- add (Add)                      (None, 1)            0           ['dense[0][0]',                  
-                                                                  'post_ar_trans[0][0]']          
-                                                                                                  
-==================================================================================================
-Total params: 63,126
-Trainable params: 63,126
-Non-trainable params: 0
-__________________________________________________________________________________________________
 The model training process has been started.
 Epoch 1/2
 500/500 [==============================] - 14s 23ms/step - loss: 0.2693 - val_loss: 0.0397
@@ -272,36 +221,6 @@ It will be prepared after importing it into models.
 s = models(req_info)
 ```
 
-.build() func. You can see your architecture with
-```python 
-s.build_model()
-```
-```
-Model: "sequential_1"
-_________________________________________________________________
- Layer (type)                Output Shape              Param #   
-=================================================================
- lstm (LSTM)                 (None, 24, 150)           91200     
-                                                                 
- dropout_2 (Dropout)         (None, 24, 150)           0         
-                                                                 
- lstm_1 (LSTM)               (None, 24, 100)           100400    
-                                                                 
- dropout_3 (Dropout)         (None, 24, 100)           0         
-                                                                 
- lstm_2 (LSTM)               (None, 50)                30200     
-                                                                 
- dropout_4 (Dropout)         (None, 50)                0         
-                                                                 
- dense_2 (Dense)             (None, 1)                 51        
-                                                                 
-=================================================================
-Total params: 221,851
-Trainable params: 221,851
-Non-trainable params: 0
-_________________________________________________________________
-```
-
 After sending the dataframe and the prepared architecture to the dTrain, you can start the training process by calling the .fit() function.
 ```python 
 train = dTrain(dataFrame=data,object=s)
@@ -380,4 +299,3 @@ preds, evaluate = train.predict()
 # func after train.predict. You can make predictions with
 predicts = train.tester(path="Data-SVR-2023-01-08-09-50-37.pkl", testData=data.iloc[:,1:][-20:])
 ```
-
