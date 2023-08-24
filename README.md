@@ -62,8 +62,7 @@ forecast,evaluate = get_result(dataFrame=data,
                     forecastNumber=24,
                     metric=["mape","mae","mse"],
                     epoch=2,
-                    forecastingStartDate=2022-03-06,
-                    verbose=1
+                    forecastingStartDate=2022-03-06
                     )
 ```
 ```python 
@@ -196,24 +195,66 @@ data = preprocess.encode_cat(dataFrame=data)
 data = preprocess.dublicates(dataFrame=data,mode="auto")
 ```
 
+
+When you import any dataset, it gives you the output of which models you should use.
+Note : Only works for deep learning models
+```python
+import selection
+model_selector = selection.ModelSelection(data,"Salecount")
+model_selector.select_model()
+
+
+Selected Models:
+1. ('ARIMA', 'If the data are stationary and autocorrelation properties are appropriate, ARIMA can be used.')
+2. ('SARIMA', 'Seasonality detected, SARIMA can be used.')
+3. ('PROPHET', 'Seasonality detected, PROPHET can be used.')
+4. ('LSTM', 'Suitable dataset size, LSTM can be used.')
+5. ('TCN', 'There are temporal dependencies, TCN can be used.')
+6. ('BILSTM', 'Data symmetric, BILSTM is available.')
+7. ('XGBoost', 'If you have irregular and heterogeneous data, XGBoost can be used.')
+8. ('GARCH', 'Upward trend detected, GARCH can be used.')
+9. ('LSTNET', 'Insufficient dataset size, LSTNet is not recommended.')
+10. ('CONVLSTM', 'No spatial and temporal patterns, CONVLSTM is not recommended.')
+```
+
+
 You should create an architecture like below.
 ```python 
-layers = {"Layer": {"unit":[150,100]
-                  ,"activation":["tanh","tanh"],
-                    "dropout"  :[0.2,0.2]
-                  }}
+layers = {
+            "unit":[150,100], 
+            "activation":["tanh","tanh"],
+            "dropout"  :[0.2,0.2]
+         }
 ```
 
 You can set each parameter below it by calling the 'req_info' object.
 ```python 
-req_info.layers = layers
+from perlib.forecaster import req_info,dmodels
+from perlib.core.train import dTrain
+from perlib.core.tester import dTester
+
+#layers = {
+#        "CNNFilters":100,
+#        "CNNKernel":6,
+#        "GRUUnits":50,
+#        "skip" : 25,
+#        "highway" : 1
+#          }
+
+req_info.layers = None
 req_info.modelname = "lstm"
-req_info.epoch  =  2
+req_info.epoch  =  30
+#req_info.learning_rate = 0.001
+req_info.loss  = "mse"
+req_info.lookback = 30
+req_info.optimizer = "adam"
 req_info.targetCol = "Values"
-req_info.forecastingStartDate = "2022-01-06 19:00:00"
-req_info.period = "hourly"
-req_info.forecastNumber = 7
+req_info.forecastingStartDate = "2022-01-06 15:00:00"
+req_info.period = "daily"
+req_info.forecastNumber = 30
 req_info.scaler = "standard"
+s = dmodels(req_info)
+
 ```
 
 It will be prepared after importing it into models.
